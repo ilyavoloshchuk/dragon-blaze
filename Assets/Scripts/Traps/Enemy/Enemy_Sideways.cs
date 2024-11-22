@@ -74,7 +74,7 @@ public class Enemy_Sideways : MonoBehaviour
             PlayerMovement playerMovement = collision.GetComponent<PlayerMovement>();
             if (playerMovement != null && playerMovement.IsVisible())
             {
-                Health.Health playerHealth = collision.GetComponent<Health.Health>();
+                Health playerHealth = collision.GetComponent<Health>();
                 if (playerHealth != null)
                 {
                     playerHealth.TakeDamage(damage);

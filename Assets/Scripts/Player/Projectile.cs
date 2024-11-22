@@ -70,7 +70,7 @@ public class Projectile : MonoBehaviour
 
         if (collision.CompareTag("Enemy"))
         {
-            collision.GetComponent<Health.Health>()?.TakeDamage(1);
+            collision.GetComponent<Health>()?.TakeDamage(1);
         }
     }
 
