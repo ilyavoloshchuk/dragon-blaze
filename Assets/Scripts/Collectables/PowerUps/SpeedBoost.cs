@@ -1,41 +1,44 @@
 using UnityEngine;
 
-public class SpeedBoost : PowerUpBase
+namespace Collectables.PowerUps
 {
-    [SerializeField] private Sprite speedBoostImage;
-    [SerializeField] private float speedMultiplier = 2f;
-
-    private float originalSpeed;
-
-    protected override void ActivatePowerUp(PlayerMovement playerMovement)
+    public class SpeedBoost : PowerUpBase
     {
-        StoreOriginalSpeed(playerMovement);
-        ApplySpeedBoost(playerMovement);
-        ActivateUIIndicator();
-    }
+        [SerializeField] private Sprite speedBoostImage;
+        [SerializeField] private float speedMultiplier = 2f;
 
-    protected override void DeactivatePowerUp(PlayerMovement playerMovement)
-    {
-        ResetSpeed(playerMovement);
-    }
+        private float originalSpeed;
 
-    private void StoreOriginalSpeed(PlayerMovement playerMovement)
-    {
-        originalSpeed = playerMovement.speed;
-    }
+        protected override void ActivatePowerUp(PlayerMovement playerMovement)
+        {
+            StoreOriginalSpeed(playerMovement);
+            ApplySpeedBoost(playerMovement);
+            ActivateUIIndicator();
+        }
 
-    private void ApplySpeedBoost(PlayerMovement playerMovement)
-    {
-        playerMovement.speed *= speedMultiplier;
-    }
+        protected override void DeactivatePowerUp(PlayerMovement playerMovement)
+        {
+            ResetSpeed(playerMovement);
+        }
 
-    private void ActivateUIIndicator()
-    {
-        ActivateIndicator("Speed Boost", speedBoostImage);
-    }
+        private void StoreOriginalSpeed(PlayerMovement playerMovement)
+        {
+            originalSpeed = playerMovement.speed;
+        }
 
-    private void ResetSpeed(PlayerMovement playerMovement)
-    {
-        playerMovement.speed = originalSpeed;
+        private void ApplySpeedBoost(PlayerMovement playerMovement)
+        {
+            playerMovement.speed *= speedMultiplier;
+        }
+
+        private void ActivateUIIndicator()
+        {
+            ActivateIndicator("Speed Boost", speedBoostImage);
+        }
+
+        private void ResetSpeed(PlayerMovement playerMovement)
+        {
+            playerMovement.speed = originalSpeed;
+        }
     }
 }
