@@ -1,4 +1,3 @@
-using Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
