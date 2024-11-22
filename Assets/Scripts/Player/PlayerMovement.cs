@@ -320,13 +320,20 @@ public class PlayerMovement : MonoBehaviour
         {
             fallingTimer = 0f; // Reset falling timer when wall sliding
             body.velocity = new Vector2(body.velocity.x, Mathf.Clamp(body.velocity.y, -wallSlideSpeed, float.MaxValue));
-            if (!wallSlideParticles.isPlaying)
-                wallSlideParticles.Play();
+            
+            if (wallSlideParticles != null)
+            {
+                if (!wallSlideParticles.isPlaying)
+                    wallSlideParticles.Play();
+            }
         }
         else
         {
-            if (wallSlideParticles.isPlaying)
-                wallSlideParticles.Stop();
+            if (wallSlideParticles != null)
+            {
+                if (wallSlideParticles.isPlaying)
+                    wallSlideParticles.Stop();
+            }
         }
     }
 

@@ -25,9 +25,6 @@ namespace Enemy
         [SerializeField] private GameObject hitParticleSystemPrefab;
         [SerializeField] private GameObject deathParticleSystemPrefab;
 
-        [Header("Health Parameters")]
-        [SerializeField] private float health = 100f;
-
         private float cooldownTimer = Mathf.Infinity;
         private Transform playerTransform;
         private Animator anim;
