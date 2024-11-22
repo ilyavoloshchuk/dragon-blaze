@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using Collectables.Coins;
 
 public class PlayerMovement : MonoBehaviour
 {

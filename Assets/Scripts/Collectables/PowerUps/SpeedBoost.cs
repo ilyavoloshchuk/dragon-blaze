@@ -1,44 +1,41 @@
 using UnityEngine;
 
-namespace Collectables.PowerUps
+public class SpeedBoost : PowerUpBase
 {
-    public class SpeedBoost : PowerUpBase
+    [SerializeField] private Sprite speedBoostImage;
+    [SerializeField] private float speedMultiplier = 2f;
+
+    private float originalSpeed;
+
+    protected override void ActivatePowerUp(PlayerMovement playerMovement)
     {
-        [SerializeField] private Sprite speedBoostImage;
-        [SerializeField] private float speedMultiplier = 2f;
+        StoreOriginalSpeed(playerMovement);
+        ApplySpeedBoost(playerMovement);
+        ActivateUIIndicator();
+    }
 
-        private float originalSpeed;
+    protected override void DeactivatePowerUp(PlayerMovement playerMovement)
+    {
+        ResetSpeed(playerMovement);
+    }
 
-        protected override void ActivatePowerUp(PlayerMovement playerMovement)
-        {
-            StoreOriginalSpeed(playerMovement);
-            ApplySpeedBoost(playerMovement);
-            ActivateUIIndicator();
-        }
+    private void StoreOriginalSpeed(PlayerMovement playerMovement)
+    {
+        originalSpeed = playerMovement.speed;
+    }
 
-        protected override void DeactivatePowerUp(PlayerMovement playerMovement)
-        {
-            ResetSpeed(playerMovement);
-        }
+    private void ApplySpeedBoost(PlayerMovement playerMovement)
+    {
+        playerMovement.speed *= speedMultiplier;
+    }
 
-        private void StoreOriginalSpeed(PlayerMovement playerMovement)
-        {
-            originalSpeed = playerMovement.speed;
-        }
+    private void ActivateUIIndicator()
+    {
+        ActivateIndicator("Speed Boost", speedBoostImage);
+    }
 
-        private void ApplySpeedBoost(PlayerMovement playerMovement)
-        {
-            playerMovement.speed *= speedMultiplier;
-        }
-
-        private void ActivateUIIndicator()
-        {
-            ActivateIndicator("Speed Boost", speedBoostImage);
-        }
-
-        private void ResetSpeed(PlayerMovement playerMovement)
-        {
-            playerMovement.speed = originalSpeed;
-        }
+    private void ResetSpeed(PlayerMovement playerMovement)
+    {
+        playerMovement.speed = originalSpeed;
     }
 }

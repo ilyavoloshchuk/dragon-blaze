@@ -1,44 +1,41 @@
 using UnityEngine;
 
-namespace Collectables.PowerUps
+public class HigherJump : PowerUpBase
 {
-    public class HigherJump : PowerUpBase
+    [SerializeField] private float jumpMultiplier = 1.5f;
+    [SerializeField] private Sprite higherJumpImage;
+
+    private float originalJumpPower;
+
+    protected override void ActivatePowerUp(PlayerMovement playerMovement)
     {
-        [SerializeField] private float jumpMultiplier = 1.5f;
-        [SerializeField] private Sprite higherJumpImage;
+        StoreOriginalJumpPower(playerMovement);
+        ApplyJumpMultiplier(playerMovement);
+        ActivateUIIndicator();
+    }
 
-        private float originalJumpPower;
+    protected override void DeactivatePowerUp(PlayerMovement playerMovement)
+    {
+        ResetJumpPower(playerMovement);
+    }
 
-        protected override void ActivatePowerUp(PlayerMovement playerMovement)
-        {
-            StoreOriginalJumpPower(playerMovement);
-            ApplyJumpMultiplier(playerMovement);
-            ActivateUIIndicator();
-        }
+    private void StoreOriginalJumpPower(PlayerMovement playerMovement)
+    {
+        originalJumpPower = playerMovement.jumpPower;
+    }
 
-        protected override void DeactivatePowerUp(PlayerMovement playerMovement)
-        {
-            ResetJumpPower(playerMovement);
-        }
+    private void ApplyJumpMultiplier(PlayerMovement playerMovement)
+    {
+        playerMovement.jumpPower = originalJumpPower * jumpMultiplier;
+    }
 
-        private void StoreOriginalJumpPower(PlayerMovement playerMovement)
-        {
-            originalJumpPower = playerMovement.jumpPower;
-        }
+    private void ActivateUIIndicator()
+    {
+        ActivateIndicator("Higher Jump", higherJumpImage);
+    }
 
-        private void ApplyJumpMultiplier(PlayerMovement playerMovement)
-        {
-            playerMovement.jumpPower = originalJumpPower * jumpMultiplier;
-        }
-
-        private void ActivateUIIndicator()
-        {
-            ActivateIndicator("Higher Jump", higherJumpImage);
-        }
-
-        private void ResetJumpPower(PlayerMovement playerMovement)
-        {
-            playerMovement.jumpPower = originalJumpPower;
-        }
+    private void ResetJumpPower(PlayerMovement playerMovement)
+    {
+        playerMovement.jumpPower = originalJumpPower;
     }
 }
