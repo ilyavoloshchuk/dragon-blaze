@@ -19,7 +19,6 @@ public class MenuManager : MonoBehaviour
     private void Awake()
     {
         ChangePosition(0);
-        ShowCursor();
     }
 
     private void Update()
@@ -54,11 +53,6 @@ public class MenuManager : MonoBehaviour
     #endregion
 
     #region Private Methods
-    private void ShowCursor()
-    {
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-    }
 
     private void HandleInput()
     {

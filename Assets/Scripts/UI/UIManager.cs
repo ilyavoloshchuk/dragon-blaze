@@ -125,13 +125,11 @@ public class UIManager : MonoBehaviour
     {
         SceneManager.LoadScene(0);
         SetGameOverState(false);
-        ShowCursor();
     }
 
     public void Quit()
     {
         GameManager.instance?.SaveGame();
-        ShowCursor();
         Application.Quit();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
@@ -144,8 +142,6 @@ public class UIManager : MonoBehaviour
 
         pauseScreen.SetActive(status);
         Time.timeScale = status ? 0.01f : 1;
-        Cursor.visible = status;
-        Cursor.lockState = status ? CursorLockMode.None : CursorLockMode.Locked;
         TogglePlayerMovement(!status);
     }
     #endregion
@@ -203,19 +199,12 @@ public class UIManager : MonoBehaviour
     private void SetGameOverState(bool isGameOver)
     {
         gameOverScreen.SetActive(isGameOver);
-        Cursor.visible = isGameOver;
-        Cursor.lockState = isGameOver ? CursorLockMode.None : CursorLockMode.Locked;
         Time.timeScale = isGameOver ? 0 : 1;
         TogglePlayerMovement(!isGameOver);
     }
     #endregion
 
     #region Utility Methods
-    private void ShowCursor()
-    {
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-    }
 
     public void TogglePlayerMovement(bool enable)
     {

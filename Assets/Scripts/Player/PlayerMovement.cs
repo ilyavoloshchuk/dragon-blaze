@@ -106,6 +106,8 @@ public class PlayerMovement : MonoBehaviour
     private bool isWallSliding = false;
     private RaycastHit2D wallCheckHit;
     private float wallJumpCounter;
+    public bool OnLadder;
+
     #endregion
 
     #endregion
@@ -119,7 +121,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        SetCursorState();
         wallSlideParticles = Instantiate(wallSlideParticlesPrefab, transform).GetComponent<ParticleSystem>();
     }
 
@@ -145,13 +146,7 @@ public class PlayerMovement : MonoBehaviour
         playerSpriteRenderer = GetComponent<SpriteRenderer>();
         playerRespawn = GetComponent<PlayerRespawn>();
     }
-
-    private void SetCursorState()
-    {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-    }
-
+    
     #endregion
 
     #region Player Action Methods
@@ -170,7 +165,7 @@ public class PlayerMovement : MonoBehaviour
         {
             fallingTimer += Time.deltaTime;
 
-            if (fallingTimer > maxFallingTime && !gameOverTriggered)
+            if (fallingTimer > maxFallingTime && !gameOverTriggered && !OnLadder)
             {
                 Die();
                 gameOverTriggered = true;
@@ -318,13 +313,20 @@ public class PlayerMovement : MonoBehaviour
         {
             fallingTimer = 0f; // Reset falling timer when wall sliding
             body.velocity = new Vector2(body.velocity.x, Mathf.Clamp(body.velocity.y, -wallSlideSpeed, float.MaxValue));
-            if (!wallSlideParticles.isPlaying)
-                wallSlideParticles.Play();
+
+            if (wallSlideParticles != null)
+            {
+                if (!wallSlideParticles.isPlaying)
+                    wallSlideParticles.Play();   
+            }
         }
         else
         {
-            if (wallSlideParticles.isPlaying)
-                wallSlideParticles.Stop();
+            if (wallSlideParticles != null)
+            {
+                if (wallSlideParticles.isPlaying)
+                    wallSlideParticles.Stop();   
+            }
         }
     }
 

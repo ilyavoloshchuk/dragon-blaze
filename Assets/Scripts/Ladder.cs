@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Ladder : MonoBehaviour
 {
-    [SerializeField] private float _speed = 100f;
+    [SerializeField] private float _speed = 500f;
     [SerializeField] private Collider2D _ladderCollider; 
 
     private void Awake()
@@ -14,7 +14,9 @@ public class Ladder : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     { 
-        if (!other.TryGetComponent(out PlayerMovement _)) return;
+        if (!other.TryGetComponent(out PlayerMovement player)) return;
+
+        player.OnLadder = true;
         
         if (other.transform.position.y > _ladderCollider.bounds.max.y)
         {
@@ -27,7 +29,7 @@ public class Ladder : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         if (!other.TryGetComponent(out PlayerMovement _)) return;
-
+        
         var rbComponent = other.GetComponent<Rigidbody2D>();
         if (rbComponent == null) return;
         
@@ -42,11 +44,13 @@ public class Ladder : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (!other.TryGetComponent(out PlayerMovement _)) return;
+        if (!other.TryGetComponent(out PlayerMovement player)) return;
+        
+        player.OnLadder = true;
         
         var rbComponent = other.GetComponent<Rigidbody2D>();
         if (rbComponent != null)
-            rbComponent.gravityScale = 3;
+            rbComponent.gravityScale = 7;
     }
     
     private IEnumerator MovePlayerInsideLadder()

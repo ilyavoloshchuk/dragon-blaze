@@ -66,8 +66,6 @@ public class MagicStone : MonoBehaviour
             playerInTrigger = false;
             if (indicatorSprite != null)
                 indicatorSprite.enabled = false;
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
         }
     }
 
