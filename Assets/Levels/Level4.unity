@@ -716,7 +716,7 @@ GameObject:
   m_Component:
   - component: {fileID: 171365115}
   - component: {fileID: 171365116}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (13)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -967,7 +967,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 233430503}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprites
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1016,7 +1016,7 @@ GameObject:
   m_Component:
   - component: {fileID: 235981990}
   - component: {fileID: 235981991}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2019,7 +2019,7 @@ GameObject:
   m_Component:
   - component: {fileID: 366306983}
   - component: {fileID: 366306984}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (14)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2247,7 +2247,7 @@ GameObject:
   m_Component:
   - component: {fileID: 425500592}
   - component: {fileID: 425500593}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2574,7 +2574,7 @@ GameObject:
   m_Component:
   - component: {fileID: 432853865}
   - component: {fileID: 432853866}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (15)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2846,11 +2846,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8594955030401506640, guid: 83a0246fdfaa2820aa300557d2dccd18, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 150.98038
+      value: 150.66049
       objectReference: {fileID: 0}
     - target: {fileID: 8594955030401506640, guid: 83a0246fdfaa2820aa300557d2dccd18, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7.5303297
+      value: 7.52796
       objectReference: {fileID: 0}
     - target: {fileID: 8594955030401506640, guid: 83a0246fdfaa2820aa300557d2dccd18, type: 3}
       propertyPath: m_LocalPosition.z
@@ -21723,7 +21723,7 @@ GameObject:
   m_Component:
   - component: {fileID: 615337986}
   - component: {fileID: 615337987}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22823,7 +22823,7 @@ GameObject:
   m_Component:
   - component: {fileID: 808340437}
   - component: {fileID: 808340438}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (16)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22984,7 +22984,7 @@ GameObject:
   m_Component:
   - component: {fileID: 838105121}
   - component: {fileID: 838105122}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23236,7 +23236,7 @@ GameObject:
   m_Component:
   - component: {fileID: 872583292}
   - component: {fileID: 872583293}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (11)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23729,7 +23729,7 @@ GameObject:
   m_Component:
   - component: {fileID: 956956225}
   - component: {fileID: 956956226}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24216,8 +24216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1032691658}
   - component: {fileID: 1032691657}
-  - component: {fileID: 1032691659}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Ladder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24253,10 +24252,10 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.271492, y: 3.2977262}
+  m_Offset: {x: 0.271492, y: 3.7500892}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -24267,7 +24266,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.542984, y: 24.967243}
+  m_Size: {x: 1.542984, y: 24.062515}
   m_EdgeRadius: 0
 --- !u!4 &1032691658
 Transform:
@@ -24285,20 +24284,6 @@ Transform:
   - {fileID: 233430503}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1032691659
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1032691656}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb6e6cd4524440aa9ebf6c429f288c57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 100
-  _ladderCollider: {fileID: 1032691657}
 --- !u!1001 &1070086818
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25419,7 +25404,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1279967075}
   - component: {fileID: 1279967076}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25922,7 +25907,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1417590582}
   - component: {fileID: 1417590583}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26509,7 +26494,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1567555391}
   - component: {fileID: 1567555392}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27085,7 +27070,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1696611053}
   - component: {fileID: 1696611054}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27697,7 +27682,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2003473909}
   - component: {fileID: 2003473910}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (12)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28247,7 +28232,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2089298054}
   - component: {fileID: 2089298055}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28331,7 +28316,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2110733729}
   - component: {fileID: 2110733730}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Sprite (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

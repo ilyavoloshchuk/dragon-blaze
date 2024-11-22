@@ -1,22 +1,22 @@
-using NPCs.Dialogue;
 using UnityEngine;
 
-namespace NPCs.Npc_s
+public class Lumina : NPC, ITalkable
 {
-    public class Lumina : Npc
+    #region Serialized Fields
+    [SerializeField] private DialogueText dialogueText;
+    [SerializeField] private DialogueController dialogueController;
+    [SerializeField] private AudioClip dialogueSound;
+    #endregion
+
+    #region Public Methods
+    public override void Interact()
     {
-        [SerializeField] private DialogueText dialogueText;
-        [SerializeField] private DialogueController dialogueController;
-        [SerializeField] private AudioClip dialogueSound;
-
-        protected override void Interact()
-        {
-            Talk(dialogueText);
-        }
-
-        private void Talk(DialogueText dialogueText)
-        {
-            dialogueController.DisplayNextParagraph(dialogueText, dialogueSound);
-        }
+        Talk(dialogueText);
     }
+
+    public void Talk(DialogueText dialogueText)
+    {
+        dialogueController.DisplayNextParagraph(dialogueText, dialogueSound);
+    }
+    #endregion
 }
