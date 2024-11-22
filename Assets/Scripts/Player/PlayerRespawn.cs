@@ -9,7 +9,7 @@ public class PlayerRespawn : MonoBehaviour
 
     #region Private Fields
     private Transform currentCheckpoint;
-    private Health playerHealth;
+    private Health.Health playerHealth;
     private UIManager uiManager;
     #endregion
 
@@ -46,7 +46,7 @@ public class PlayerRespawn : MonoBehaviour
     #region Private Methods
     private void InitializeComponents()
     {
-        playerHealth = GetComponent<Health>();
+        playerHealth = GetComponent<Health.Health>();
         uiManager = FindObjectOfType<UIManager>();
     }
 

@@ -31,7 +31,7 @@ namespace Enemy
         private float cooldownTimer = Mathf.Infinity;
         private Transform playerTransform;
         private Animator anim;
-        private Health playerHealth;
+        private Health.Health playerHealth;
         private EnemyPatrol enemyPatrol;
         private PlayerMovement playerMovement;
 

@@ -11,7 +11,7 @@ public class EnemyDamage : MonoBehaviour
         PlayerMovement playerMovement = collision.GetComponent<PlayerMovement>();
         if (playerMovement == null || !playerMovement.IsVisible()) return;
 
-        Health playerHealth = collision.GetComponent<Health>();
+        Health.Health playerHealth = collision.GetComponent<Health.Health>();
         if (playerHealth == null) return;
 
         playerHealth.TakeDamage(damage);

@@ -20,7 +20,7 @@ public class Firetrap : MonoBehaviour
     private SpriteRenderer spriteRend;
     private bool triggered; // When the trap gets triggered
     private bool active;    // When the trap is active and can hurt the player
-    private Health playerHealth;  // Reference to PlayerHealth component
+    private Health.Health playerHealth;  // Reference to PlayerHealth component
     #endregion
 
     #region Unity Lifecycle Methods
@@ -69,7 +69,7 @@ public class Firetrap : MonoBehaviour
 
     private void SetPlayerHealth(Collider2D collision)
     {
-        playerHealth = collision.GetComponent<Health>();
+        playerHealth = collision.GetComponent<Health.Health>();
     }
 
     private void ActivateTrapIfNotTriggered()
