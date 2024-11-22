@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using Core;
 using UnityEngine.SceneManagement;
 
 public class MagicStone : MonoBehaviour

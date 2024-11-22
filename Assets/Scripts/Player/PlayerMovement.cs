@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using Collectables.Coins;
+using Core;
 
 public class PlayerMovement : MonoBehaviour
 {
