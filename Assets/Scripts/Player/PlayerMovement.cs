@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UI;
 
 public class PlayerMovement : MonoBehaviour
 {
-    #region Variables
 
     #region Component References
     private Rigidbody2D body;
@@ -97,22 +97,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float defaultSpeedBoostMultiplier = 1.5f;
     [SerializeField] private float defaultSpeedBoostDuration = 5f;
     #endregion
-
-    #region Wall Jump Parameters
-    [Header("Wall Jump Parameters")]
-    [SerializeField] private float wallJumpTime = 0.2f;
-    [SerializeField] private float wallSlideSpeed = 0.3f;
-    [SerializeField] private float wallJumpForce = 15f;
-    private bool isWallSliding = false;
-    private RaycastHit2D wallCheckHit;
-    private float wallJumpCounter;
+    
     public bool OnLadder;
-
-    #endregion
-
-    #endregion
-
-    #region Unity Lifecycle Methods
+    
 
     private void Awake()
     {
@@ -133,10 +120,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    #endregion
-
-    #region Initialization Methods
-
     private void InitializeComponents()
     {
         uiManagerInstance = FindObjectOfType<UIManager>();
@@ -146,10 +129,6 @@ public class PlayerMovement : MonoBehaviour
         playerSpriteRenderer = GetComponent<SpriteRenderer>();
         playerRespawn = GetComponent<PlayerRespawn>();
     }
-    
-    #endregion
-
-    #region Player Action Methods
 
     private void HandlePlayerActions()
     {
@@ -161,7 +140,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleFalling()
     {
-        if (!IsGrounded() && !isWallSliding)
+        if (!IsGrounded())
         {
             fallingTimer += Time.deltaTime;
 
@@ -215,16 +194,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyMovement()
     {
-        if (wallJumpCounter <= 0)
-        {
-            body.gravityScale = 7;
-            body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
-        }
+        body.gravityScale = 7;
+        body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
     }
 
     private void HandleJump()
     {
-        if ((IsGrounded() || coyoteCounter > 0 || jumpCounter > 0 || isWallSliding) && Input.GetKeyDown(KeyCode.Space))
+        if ((IsGrounded() || coyoteCounter > 0 || jumpCounter > 0) && Input.GetKeyDown(KeyCode.Space))
             Jump();
 
         if (Input.GetKeyUp(KeyCode.Space) && body.velocity.y > 0)
@@ -237,12 +213,6 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             coyoteCounter -= Time.deltaTime;
-            CheckForWallSlide();
-        }
-
-        if (wallJumpCounter > 0)
-        {
-            wallJumpCounter -= Time.deltaTime;
         }
     }
 
@@ -268,30 +238,11 @@ public class PlayerMovement : MonoBehaviour
             PerformJump();
             jumpCounter--;
         }
-        else if (isWallSliding)
-        {
-            PerformWallJump();
-        }
     }
 
     private void PerformJump()
     {
         body.velocity = new Vector2(body.velocity.x, jumpPower);
-        Instantiate(jumpParticlesPrefab, transform.position, Quaternion.identity);
-        AudioSource.PlayClipAtPoint(jumpSound, transform.position);
-    }
-
-    private void PerformWallJump()
-    {
-        isWallSliding = false;
-        wallJumpCounter = wallJumpTime;
-        
-        Vector2 wallJumpDirection = new Vector2(-transform.localScale.x, 1).normalized;
-        body.velocity = new Vector2(wallJumpDirection.x * wallJumpForce, wallJumpDirection.y * jumpPower);
-        
-        // Flip the player's direction
-        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        
         Instantiate(jumpParticlesPrefab, transform.position, Quaternion.identity);
         AudioSource.PlayClipAtPoint(jumpSound, transform.position);
     }
@@ -302,41 +253,6 @@ public class PlayerMovement : MonoBehaviour
         int groundLayerMask = LayerMask.GetMask("Ground");
         RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, extraHeight, groundLayerMask);
         return raycastHit.collider != null;
-    }
-
-    private void CheckForWallSlide()
-    {
-        bool isTouchingWall = CheckWallTouch();
-        isWallSliding = isTouchingWall && !IsGrounded() && Mathf.Abs(horizontalInput) > 0.1f;
-
-        if (isWallSliding)
-        {
-            fallingTimer = 0f; // Reset falling timer when wall sliding
-            body.velocity = new Vector2(body.velocity.x, Mathf.Clamp(body.velocity.y, -wallSlideSpeed, float.MaxValue));
-
-            if (wallSlideParticles != null)
-            {
-                if (!wallSlideParticles.isPlaying)
-                    wallSlideParticles.Play();   
-            }
-        }
-        else
-        {
-            if (wallSlideParticles != null)
-            {
-                if (wallSlideParticles.isPlaying)
-                    wallSlideParticles.Stop();   
-            }
-        }
-    }
-
-    private bool CheckWallTouch()
-    {
-        float direction = transform.localScale.x;
-        Vector2 start = (Vector2)transform.position + new Vector2(direction * 0.4f, 0.2f);
-        Vector2 end = start + Vector2.down * 0.8f;
-        wallCheckHit = Physics2D.Linecast(start, end, groundLayer);
-        return wallCheckHit.collider != null;
     }
 
     private void HandleDash()
@@ -396,10 +312,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    #endregion
-
-    #region Public Methods
-
     public bool IsInvisible()
     {
         return isInvisible;
@@ -416,32 +328,7 @@ public class PlayerMovement : MonoBehaviour
         playerSpriteRenderer.color = visible ? Color.white : invisibleColor;
     }
 
-    public void ApplyInvisibility(float? duration = null)
-    {
-        StartCoroutine(InvisibilityCoroutine(duration ?? defaultInvisibilityDuration));
-    }
-
-    public void SetVisibility(bool isVisible)
-    {
-        playerSpriteRenderer.color = isVisible ? Color.white : invisibleColor;
-    }
-
-    public void ApplyDefaultHigherJump()
-    {
-        ApplyHigherJump(defaultJumpMultiplier);
-    }
-
-    public void ApplyHigherJump(float multiplier)
-    {
-        StartCoroutine(HigherJumpCoroutine(multiplier));
-    }
-
-    public void ApplySpeedBoost(float? multiplier = null, float? duration = null)
-    {
-        StartCoroutine(SpeedBoostCoroutine(multiplier ?? defaultSpeedBoostMultiplier, duration ?? defaultSpeedBoostDuration));
-    }
-
-    public void setInteracting(bool interacting)
+    public void SetInteracting(bool interacting)
     {
         isInteracting = interacting;
         anim.SetBool("grounded", isInteracting);
@@ -451,12 +338,6 @@ public class PlayerMovement : MonoBehaviour
         {
             body.velocity = Vector2.zero;
         }
-    }
-
-    public void AddScore(int value)
-    {
-        GameManager.instance.AddCoins(value);
-        OnScoreChanged?.Invoke(GameManager.instance.TotalCoins);
     }
 
     public void Die()
@@ -541,57 +422,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public int GetScore()
-    {
-        return score;
-    }
-
-    public bool canAttack()
+    public bool CanAttack()
     {
         return Mathf.Approximately(horizontalInput, 0) && IsGrounded();
     }
-
-    public float GetJumpPower()
-    {
-        return jumpPower;
-    }
-
-    public void SetJumpPower(float value)
-    {
-        jumpPower = value;
-    }
-
-    public void TakeDamage(int damage)
-    {
-        if (isInvisible) return;
-    }
-
-    #endregion
-
-    #region Coroutines
-
-    private IEnumerator InvisibilityCoroutine(float duration)
-    {
-        SetInvisibility(false);
-        yield return new WaitForSeconds(duration);
-        SetInvisibility(true);
-    }
-
-    private IEnumerator HigherJumpCoroutine(float multiplier)
-    {
-        float originalJumpPower = jumpPower;
-        jumpPower *= multiplier;
-        yield return new WaitForSeconds(defaultSpeedBoostDuration);
-        jumpPower = originalJumpPower;
-    }
-
-    private IEnumerator SpeedBoostCoroutine(float multiplier, float duration)
-    {
-        float originalSpeed = speed;
-        speed *= multiplier;
-        yield return new WaitForSeconds(duration);
-        speed = originalSpeed;
-    }
-
-    #endregion
 }

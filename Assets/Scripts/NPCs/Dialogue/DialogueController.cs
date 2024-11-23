@@ -61,7 +61,7 @@ public class DialogueController : MonoBehaviour
     #region Private Methods
     private void StartConversation(DialogueText dialogueText, AudioClip dialogueSound = null)
     {
-        playerMovement.setInteracting(true);
+        playerMovement.SetInteracting(true);
         playerMovement.enabled = false;
 
         if (dialogueSound != null)
@@ -85,7 +85,7 @@ public class DialogueController : MonoBehaviour
 
     private void EndConversation()
     {
-        playerMovement.setInteracting(false);
+        playerMovement.SetInteracting(false);
         playerMovement.enabled = true;
 
         paragraphs.Clear();

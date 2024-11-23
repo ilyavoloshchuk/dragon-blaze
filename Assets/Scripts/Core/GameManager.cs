@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.IO;
+using UI;
 using UnityEngine.SceneManagement;
 
 [System.Serializable]
@@ -111,7 +112,7 @@ public class GameManager : MonoBehaviour
     public int GetLastSavedLevelIndex()
     {
         SaveData saveData = LoadSaveData();
-        return saveData != null ? saveData.currentLevel : 1;
+        return saveData?.currentLevel ?? 1;
     }
 
     private SaveData LoadSaveData()

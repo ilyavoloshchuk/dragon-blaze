@@ -43,7 +43,7 @@ public class PlayerAttack : MonoBehaviour
 
     private bool CanAttack()
     {
-        return Input.GetMouseButton(0) && cooldownTimer > attackCooldown && playerMovement.canAttack() && Time.timeScale > 0;
+        return Input.GetMouseButton(0) && cooldownTimer > attackCooldown && playerMovement.CanAttack() && Time.timeScale > 0;
     }
 
     private void Attack()
