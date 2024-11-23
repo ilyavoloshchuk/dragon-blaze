@@ -1,147 +1,105 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections;
 using UI;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class MagicStone : MonoBehaviour
+namespace Magic_Stone
 {
-    #region Serialized Fields
-    [SerializeField] private UIManager uiManager;
-    [SerializeField] private SpriteRenderer indicatorSprite;
-    [SerializeField] private GameObject interactParticleSystemPrefab;
-    #endregion
-
-    #region Private Fields
-    private bool playerInTrigger = false;
-    private Vector3 playerPosition;
-    private GameObject activeParticleSystemInstance = null;
-    #endregion
-
-    #region Unity Lifecycle Methods
-    private void Start()
+    public class MagicStone : MonoBehaviour
     {
-        InitializeIndicatorSprite();
-    }
+        [SerializeField] private UIManager uiManager;
+        [SerializeField] private SpriteRenderer indicatorSprite;
+        [SerializeField] private GameObject interactParticleSystemPrefab;
 
-    private void Update()
-    {
-        CheckForPlayerInteraction();
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        HandlePlayerEnter(other);
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        HandlePlayerExit(other);
-    }
-    #endregion
-
-    #region Initialization
-    private void InitializeIndicatorSprite()
-    {
-        if (indicatorSprite != null)
-            indicatorSprite.enabled = false;
-    }
-    #endregion
-
-    #region Player Interaction
-    private void HandlePlayerEnter(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Player"))
+        private bool playerInTrigger;
+        private Vector3 playerPosition;
+        private GameObject activeParticleSystemInstance;
+        
+        private void Start()
         {
-            playerInTrigger = true;
-            playerPosition = other.gameObject.transform.position;
-            if (indicatorSprite != null)
-                indicatorSprite.enabled = true;
-        }
-    }
-
-    private void HandlePlayerExit(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            playerInTrigger = false;
             if (indicatorSprite != null)
                 indicatorSprite.enabled = false;
         }
-    }
 
-    private void CheckForPlayerInteraction()
-    {
-        if (playerInTrigger && Keyboard.current.eKey.wasPressedThisFrame)
+        private void Update()
         {
-            StartCoroutine(PlayParticlesThenLoadLevel(playerPosition));
-        }
-    }
-    #endregion
-
-    #region Particle System
-    private void PlayInteractParticleSystem(Vector3 position)
-    {
-        if (interactParticleSystemPrefab != null)
-        {
-            if (activeParticleSystemInstance == null || !activeParticleSystemInstance.activeInHierarchy)
+            if (playerInTrigger && Keyboard.current.eKey.wasPressedThisFrame)
             {
-                if (activeParticleSystemInstance != null)
-                    Destroy(activeParticleSystemInstance);
-
-                activeParticleSystemInstance = Instantiate(interactParticleSystemPrefab, position + new Vector3(0, 0, -1), Quaternion.identity);
+                StartCoroutine(PlayParticlesThenLoadLevel(playerPosition));
             }
         }
-        else
+
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            Debug.LogError("Interact Particle System Prefab is not assigned.");
+            if (other.gameObject.CompareTag("Player"))
+            {
+                playerInTrigger = true;
+                playerPosition = other.gameObject.transform.position;
+                if (indicatorSprite != null)
+                    indicatorSprite.enabled = true;
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.gameObject.CompareTag("Player"))
+            {
+                playerInTrigger = false;
+                if (indicatorSprite != null)
+                    indicatorSprite.enabled = false;
+            }
+        }
+
+        #region Particle System
+        private void PlayInteractParticleSystem(Vector3 position)
+        {
+            if (interactParticleSystemPrefab != null)
+            {
+                if (activeParticleSystemInstance == null || !activeParticleSystemInstance.activeInHierarchy)
+                {
+                    if (activeParticleSystemInstance != null)
+                        Destroy(activeParticleSystemInstance);
+
+                    activeParticleSystemInstance = Instantiate(interactParticleSystemPrefab, position + new Vector3(0, 0, -1), Quaternion.identity);
+                }
+            }
+            else
+            {
+                Debug.LogError("Interact Particle System Prefab is not assigned.");
+            }
+        }
+        #endregion
+        
+        private IEnumerator PlayParticlesThenLoadLevel(Vector3 position)
+        {
+            PlayInteractParticleSystem(position);
+            yield return new WaitForSeconds(interactParticleSystemPrefab.GetComponent<ParticleSystem>().main.duration);
+
+            if (SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCountInBuildSettings - 1)
+            {
+                yield return StartCoroutine(LoadSceneAndWait(SceneManager.GetActiveScene().buildIndex));
+                LoadingManager.LoadSpecificLevel(0);
+            }
+            else
+            {
+                SaveGame();
+                LoadingManager.LoadNextLevel();
+            }
+        }
+
+        private IEnumerator LoadSceneAndWait(int sceneIndex)
+        {
+            SceneManager.LoadScene(sceneIndex);
+            yield return new WaitForSeconds(10);
+        }
+        
+        private void SaveGame()
+        {
+            if (GameManager.instance != null)
+            {
+                GameManager.instance.SaveGame();
+            }
         }
     }
-    #endregion
-
-    #region Level Loading
-    private IEnumerator PlayParticlesThenLoadLevel(Vector3 position)
-    {
-        PlayInteractParticleSystem(position);
-        yield return new WaitForSeconds(interactParticleSystemPrefab.GetComponent<ParticleSystem>().main.duration);
-
-        if (SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCountInBuildSettings - 1)
-        {
-            yield return StartCoroutine(LoadSceneAndWait(SceneManager.GetActiveScene().buildIndex));
-            LoadingManager.LoadSpecificLevel(0);
-        }
-        else
-        {
-            SaveGame();
-            LoadingManager.LoadNextLevel();
-        }
-    }
-
-    private IEnumerator LoadSceneAndWait(int sceneIndex)
-    {
-        SceneManager.LoadScene(sceneIndex);
-        yield return new WaitForSeconds(10);
-    }
-
-    private IEnumerator LoadNextLevelAsync()
-    {
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(currentSceneIndex + 1);
-
-        while (!asyncLoad.isDone)
-        {
-            yield return null;
-        }
-    }
-    #endregion
-
-    #region Game State Management
-    private void SaveGame()
-    {
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.SaveGame();
-        }
-    }
-    #endregion
 }
