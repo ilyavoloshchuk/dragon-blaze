@@ -1,24 +1,27 @@
 using UnityEngine;
 
-public class StickyPlatform : MonoBehaviour
+namespace Traps.Moving_Platform
 {
-    private const string PlayerTag = "Player";
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    public class StickyPlatform : MonoBehaviour
     {
-        SetPlayerParent(collision, transform);
-    }
+        private const string PlayerTag = "Player";
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        SetPlayerParent(collision, null);
-    }
-
-    private void SetPlayerParent(Collider2D collision, Transform parent)
-    {
-        if (collision.CompareTag(PlayerTag))
+        private void OnTriggerEnter2D(Collider2D collision)
         {
-            collision.transform.SetParent(parent);
+            SetPlayerParent(collision, transform);
+        }
+
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            SetPlayerParent(collision, null);
+        }
+
+        private static void SetPlayerParent(Collider2D collision, Transform parent)
+        {
+            if (collision.CompareTag(PlayerTag))
+            {
+                collision.transform.SetParent(parent);
+            }
         }
     }
 }

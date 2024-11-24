@@ -1,110 +1,106 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
-public class Firetrap : MonoBehaviour
+namespace Traps
 {
-    #region Serialized Fields
-    [SerializeField] private float damage;
-
-    [Header("Firetrap Timers")]
-    [SerializeField] private float activationDelay;
-    [SerializeField] private float activeTime;
-
-    [Header("SFX")]
-    [SerializeField] private AudioClip firetrapSound;
-    #endregion
-
-    #region Private Fields
-    private Animator anim;
-    private SpriteRenderer spriteRend;
-    private bool triggered; // When the trap gets triggered
-    private bool active;    // When the trap is active and can hurt the player
-    private Health playerHealth;  // Reference to PlayerHealth component
-    #endregion
-
-    #region Unity Lifecycle Methods
-    private void Awake()
+    public class Firetrap : MonoBehaviour
     {
-        InitializeComponents();
-    }
+        private static readonly int Activated = Animator.StringToHash("activated");
+        [SerializeField] private float damage;
 
-    private void Update()
-    {
-        ApplyDamageIfActive();
-    }
+        [Header("Firetrap Timers")]
+        [SerializeField] private float activationDelay;
+        [SerializeField] private float activeTime;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!collision.CompareTag("Player")) return;
-
-        PlayerMovement playerMovement = collision.GetComponent<PlayerMovement>();
-        if (playerMovement != null && playerMovement.IsVisible())
+        [Header("SFX")]
+        [SerializeField] private AudioClip firetrapSound;
+        
+        private Animator anim;
+        private SpriteRenderer spriteRend;
+        private bool triggered; 
+        private bool active;    
+        private Health playerHealth; 
+        
+        private void Awake()
         {
-            SetPlayerHealth(collision);
-            ActivateTrapIfNotTriggered();
+            InitializeComponents();
+        }
+
+        private void Update()
+        {
             ApplyDamageIfActive();
         }
-    }
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-            playerHealth = null;
-    }
-    #endregion
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (!collision.CompareTag("Player")) return;
 
-    #region Private Methods
-    private void InitializeComponents()
-    {
-        anim = GetComponent<Animator>();
-        spriteRend = GetComponent<SpriteRenderer>();
-    }
+            PlayerMovement playerMovement = collision.GetComponent<PlayerMovement>();
+            if (playerMovement != null && playerMovement.IsVisible())
+            {
+                SetPlayerHealth(collision);
+                ActivateTrapIfNotTriggered();
+                ApplyDamageIfActive();
+            }
+        }
 
-    private void ApplyDamageIfActive()
-    {
-        if (playerHealth != null && active)
-            playerHealth.TakeDamage(damage);
-    }
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            if (collision.CompareTag("Player"))
+                playerHealth = null;
+        }
+        
+        private void InitializeComponents()
+        {
+            anim = GetComponent<Animator>();
+            spriteRend = GetComponent<SpriteRenderer>();
+        }
 
-    private void SetPlayerHealth(Collider2D collision)
-    {
-        playerHealth = collision.GetComponent<Health>();
-    }
+        private void ApplyDamageIfActive()
+        {
+            if (playerHealth != null && active)
+                playerHealth.TakeDamage(damage);
+        }
 
-    private void ActivateTrapIfNotTriggered()
-    {
-        if (!triggered)
-            StartCoroutine(ActivateFiretrap());
-    }
+        private void SetPlayerHealth(Collider2D collision)
+        {
+            playerHealth = collision.GetComponent<Health>();
+        }
 
-    private IEnumerator ActivateFiretrap()
-    {
-        SetTrapTriggered();
-        yield return new WaitForSeconds(activationDelay);
-        ActivateTrap();
-        yield return new WaitForSeconds(activeTime);
-        DeactivateTrap();
-    }
+        private void ActivateTrapIfNotTriggered()
+        {
+            if (!triggered)
+                StartCoroutine(ActivateFiretrap());
+        }
 
-    private void SetTrapTriggered()
-    {
-        triggered = true;
-        spriteRend.color = Color.red;
-    }
+        private IEnumerator ActivateFiretrap()
+        {
+            SetTrapTriggered();
+            yield return new WaitForSeconds(activationDelay);
+            ActivateTrap();
+            yield return new WaitForSeconds(activeTime);
+            DeactivateTrap();
+        }
 
-    private void ActivateTrap()
-    {
-        SoundManager.instance.PlaySound(firetrapSound);
-        spriteRend.color = Color.white;
-        active = true;
-        anim.SetBool("activated", true);
-    }
+        private void SetTrapTriggered()
+        {
+            triggered = true;
+            spriteRend.color = Color.red;
+        }
 
-    private void DeactivateTrap()
-    {
-        active = false;
-        triggered = false;
-        anim.SetBool("activated", false);
+        private void ActivateTrap()
+        {
+            SoundManager.instance.PlaySound(firetrapSound);
+            spriteRend.color = Color.white;
+            active = true;
+            anim.SetBool(Activated, true);
+        }
+
+        private void DeactivateTrap()
+        {
+            active = false;
+            triggered = false;
+            anim.SetBool(Activated, false);
+        }
     }
-    #endregion
 }

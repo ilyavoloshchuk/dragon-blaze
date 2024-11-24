@@ -160,10 +160,6 @@ namespace UI
             {
                 coinText.text = $": {coins}";
             }
-            else
-            {
-                Debug.LogError("Coin TextMeshProUGUI not assigned in UIManager.");
-            }
         }
 
         private void SetGameOverState(bool isGameOver)

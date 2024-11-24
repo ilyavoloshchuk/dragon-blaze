@@ -4,6 +4,7 @@ namespace Traps.Enemy
 {
     public class EnemyProjectile : EnemyDamage
     {
+        private static readonly int Explode = Animator.StringToHash("explode");
         public float speed;
         [SerializeField] private float resetTime;
         private float lifetime;
@@ -14,7 +15,8 @@ namespace Traps.Enemy
         
         private void Awake()
         {
-            InitializeComponents();
+            anim = GetComponent<Animator>();
+            coll = GetComponent<BoxCollider2D>();
         }
 
         private void Update()
@@ -36,12 +38,6 @@ namespace Traps.Enemy
         {
             ResetProjectile();
         }
-        
-        private void InitializeComponents()
-        {
-            anim = GetComponent<Animator>();
-            coll = GetComponent<BoxCollider2D>();
-        }
 
         private void MoveProjectile()
         {
@@ -56,7 +52,7 @@ namespace Traps.Enemy
                 Deactivate();
         }
 
-        private bool ShouldProcessCollision(Collider2D collision)
+        private static bool ShouldProcessCollision(Collider2D collision)
         {
             if (!collision.CompareTag("Player")) return true;
 
@@ -70,7 +66,7 @@ namespace Traps.Enemy
             coll.enabled = false;
 
             if (anim != null)
-                anim.SetTrigger("explode");
+                anim.SetTrigger(Explode);
             else
                 Deactivate();
         }
@@ -83,9 +79,7 @@ namespace Traps.Enemy
             coll.enabled = true;
         }
 
-        private void Deactivate()
-        {
+        private void Deactivate() =>
             gameObject.SetActive(false);
-        }
     }
 }

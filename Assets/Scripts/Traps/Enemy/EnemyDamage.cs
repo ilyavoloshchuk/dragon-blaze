@@ -1,19 +1,22 @@
 using UnityEngine;
 
-public class EnemyDamage : MonoBehaviour
+namespace Traps.Enemy
 {
-    [SerializeField] protected float damage;
-
-    protected void OnTriggerEnter2D(Collider2D collision)
+    public class EnemyDamage : MonoBehaviour
     {
-        if (!collision.CompareTag("Player")) return;
+        [SerializeField] protected float damage;
 
-        PlayerMovement playerMovement = collision.GetComponent<PlayerMovement>();
-        if (playerMovement == null || !playerMovement.IsVisible()) return;
+        protected void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (!collision.CompareTag("Player")) return;
 
-        Health playerHealth = collision.GetComponent<Health>();
-        if (playerHealth == null) return;
+            PlayerMovement playerMovement = collision.GetComponent<PlayerMovement>();
+            if (playerMovement == null || !playerMovement.IsVisible()) return;
 
-        playerHealth.TakeDamage(damage);
+            Health playerHealth = collision.GetComponent<Health>();
+            if (playerHealth == null) return;
+
+            playerHealth.TakeDamage(damage);
+        }
     }
 }

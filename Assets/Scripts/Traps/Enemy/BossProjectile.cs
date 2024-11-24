@@ -5,50 +5,39 @@ namespace Traps.Enemy
 {
     public class BossProjectile : EnemyDamage
     {
-        public float speed; // Скорость снаряда
-        [SerializeField] private float resetTime; // Время жизни снаряда
-        private float lifetime; // Текущее время жизни
-        private bool hit; // Флаг столкновения
+        private static readonly int Explode = Animator.StringToHash("explode");
+        public float speed; 
+        [SerializeField] private float resetTime;
+        private float lifetime; 
+        private bool hit; 
 
-        private Animator anim; // Анимация взрыва
-        private BoxCollider2D coll; // Коллайдер снаряда
-        private Vector3 _moveDirection;
+        private Animator anim;
+        private BoxCollider2D coll; 
+        private Vector3 moveDirection;
 
         private void Awake()
         {
-            InitializeComponents();
+            anim = GetComponent<Animator>();
+            coll = GetComponent<BoxCollider2D>();
         }
 
         public void ActivateProjectile(Vector3 targetPosition)
         {
-            // Рассчитываем направление движения
-            _moveDirection = (targetPosition - transform.position).normalized;
-
-            // Сбрасываем состояние и активируем снаряд
+            moveDirection = (targetPosition - transform.position).normalized;
             ResetProjectile();
-
-            // Запускаем корутину для движения
             StartCoroutine(MoveInDirection());
-        }
-        
-        private void InitializeComponents()
-        {
-            anim = GetComponent<Animator>();
-            coll = GetComponent<BoxCollider2D>();
         }
 
         private IEnumerator MoveInDirection()
         {
             while (!hit)
             {
-                // Двигаем снаряд в указанном направлении
-                float movementSpeed = speed * Time.deltaTime;
-                transform.position += _moveDirection * movementSpeed;
+                var movementSpeed = speed * Time.deltaTime;
+                transform.position += moveDirection * movementSpeed;
 
-                yield return null; // Ждём следующий кадр
+                yield return null; 
             }
-
-            // Если снаряд столкнулся, деактивируем его
+            
             Deactivate();
         }
 
@@ -60,7 +49,7 @@ namespace Traps.Enemy
             base.OnTriggerEnter2D(collision);
         }
 
-        private bool ShouldProcessCollision(Collider2D collision)
+        private static bool ShouldProcessCollision(Collider2D collision)
         {
             if (!collision.CompareTag("Player")) return true;
 
@@ -74,7 +63,7 @@ namespace Traps.Enemy
             coll.enabled = false;
 
             if (anim != null)
-                anim.SetTrigger("explode");
+                anim.SetTrigger(Explode);
             else
                 Deactivate();
         }
@@ -86,9 +75,7 @@ namespace Traps.Enemy
             coll.enabled = true;
         }
 
-        private void Deactivate()
-        {
+        private void Deactivate() =>
             gameObject.SetActive(false);
-        }
     }
 }
