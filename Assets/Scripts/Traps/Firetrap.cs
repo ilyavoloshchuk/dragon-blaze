@@ -20,7 +20,7 @@ namespace Traps
         private SpriteRenderer spriteRend;
         private bool triggered; 
         private bool active;    
-        private Health playerHealth; 
+        private Health.Health playerHealth; 
         
         private void Awake()
         {
@@ -65,7 +65,7 @@ namespace Traps
 
         private void SetPlayerHealth(Collider2D collision)
         {
-            playerHealth = collision.GetComponent<Health>();
+            playerHealth = collision.GetComponent<Health.Health>();
         }
 
         private void ActivateTrapIfNotTriggered()

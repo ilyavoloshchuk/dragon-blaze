@@ -1,68 +1,72 @@
+using Core;
 using UnityEngine;
 
-public class Coin : Collectable
+namespace Collectables.Coins
 {
-    [SerializeField] private int value = 1;
-    [SerializeField] private AudioClip pickupSound;
-    [SerializeField] private ParticleSystem pickupEffect;
-
-    private int storedValue;
-
-    private void OnTriggerEnter2D(Collider2D other)
+    public class Coin : MonoBehaviour
     {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            Collect();
-        }
-        else if (other.gameObject.CompareTag("Checkpoint"))
-        {
-            storedValue = value;
-        }
-    }
+        [SerializeField] private int value = 1;
+        [SerializeField] private AudioClip pickupSound;
+        [SerializeField] private ParticleSystem pickupEffect;
 
-    public override void Collect()
-    {
-        if (GameManager.instance == null)
+        private int storedValue;
+
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            return;
+            if (other.gameObject.CompareTag("Player"))
+            {
+                Collect();
+            }
+            else if (other.gameObject.CompareTag("Checkpoint"))
+            {
+                storedValue = value;
+            }
         }
 
-        PlayPickupSound();
-        PlayPickupEffect();
-        AddCoinsToGameManager();
-        DestroyCoin();
-    }
-
-    private void PlayPickupSound()
-    {
-        if (SoundManager.instance != null && pickupSound != null)
+        private void Collect()
         {
-            SoundManager.instance.PlaySound(pickupSound);
-        }
-    }
+            if (GameManager.instance == null)
+            {
+                return;
+            }
 
-    private void PlayPickupEffect()
-    {
-        if (pickupEffect != null)
+            PlayPickupSound();
+            PlayPickupEffect();
+            AddCoinsToGameManager();
+            DestroyCoin();
+        }
+
+        private void PlayPickupSound()
         {
-            ParticleSystem effect = Instantiate(pickupEffect, transform.position, Quaternion.identity);
-            effect.Play();
-            Destroy(effect.gameObject, effect.main.duration);
+            if (SoundManager.instance != null && pickupSound != null)
+            {
+                SoundManager.instance.PlaySound(pickupSound);
+            }
         }
-    }
 
-    private void AddCoinsToGameManager()
-    {
-        GameManager.instance.AddCoins(value);
-    }
+        private void PlayPickupEffect()
+        {
+            if (pickupEffect != null)
+            {
+                ParticleSystem effect = Instantiate(pickupEffect, transform.position, Quaternion.identity);
+                effect.Play();
+                Destroy(effect.gameObject, effect.main.duration);
+            }
+        }
 
-    private void DestroyCoin()
-    {
-        Destroy(gameObject);
-    }
+        private void AddCoinsToGameManager()
+        {
+            GameManager.instance.AddCoins(value);
+        }
 
-    public void ResetValue()
-    {
-        value = storedValue;
+        private void DestroyCoin()
+        {
+            Destroy(gameObject);
+        }
+
+        public void ResetValue()
+        {
+            value = storedValue;
+        }
     }
 }

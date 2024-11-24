@@ -1,33 +1,29 @@
-using UnityEngine;
+using Core;
 using TMPro;
+using UnityEngine;
 
-public class ScoreDisplay : MonoBehaviour
+namespace Collectables.Coins
 {
-    [SerializeField] private TextMeshProUGUI coinText;
-
-    #region Unity Lifecycle Methods
-
-    private void OnEnable()
+    public class ScoreDisplay : MonoBehaviour
     {
-        GameManager.OnScoreChanged += UpdateScoreDisplay;
-    }
+        [SerializeField] private TextMeshProUGUI coinText;
 
-    private void OnDisable()
-    {
-        GameManager.OnScoreChanged -= UpdateScoreDisplay;
-    }
-
-    #endregion
-
-    #region Score Display Methods
-
-    private void UpdateScoreDisplay(int score)
-    {
-        if (coinText != null)
+        private void OnEnable()
         {
-            coinText.text = $": {score}";
+            GameManager.OnScoreChanged += UpdateScoreDisplay;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnScoreChanged -= UpdateScoreDisplay;
+        }
+
+        private void UpdateScoreDisplay(int score)
+        {
+            if (coinText != null)
+            {
+                coinText.text = $": {score}";
+            }
         }
     }
-
-    #endregion
 }

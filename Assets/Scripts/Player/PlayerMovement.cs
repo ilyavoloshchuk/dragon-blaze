@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Collectables.Coins;
 using UI;
 using UnityEngine;
 

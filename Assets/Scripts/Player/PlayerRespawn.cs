@@ -9,7 +9,7 @@ namespace Player
         [SerializeField] private AudioClip checkpoint;
         
         private Transform currentCheckpoint;
-        private Health playerHealth;
+        private Health.Health playerHealth;
         private UIManager uiManager;
         
         private void Awake()
@@ -40,7 +40,7 @@ namespace Player
         
         private void InitializeComponents()
         {
-            playerHealth = GetComponent<Health>();
+            playerHealth = GetComponent<Health.Health>();
             uiManager = FindObjectOfType<UIManager>();
         }
 

@@ -37,7 +37,7 @@ public class HealthCollectible : MonoBehaviour
 
     private void AddHealthToPlayer(Collider2D playerCollider)
     {
-        Health playerHealth = playerCollider.GetComponent<Health>();
+        Health.Health playerHealth = playerCollider.GetComponent<Health.Health>();
         if (playerHealth != null)
         {
             playerHealth.AddHealth(healthValue);

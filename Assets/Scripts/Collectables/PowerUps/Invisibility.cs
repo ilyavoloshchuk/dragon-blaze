@@ -1,28 +1,31 @@
 using Player;
 using UnityEngine;
 
-public class Invisibility : PowerUpBase
+namespace Collectables.PowerUps
 {
-    [SerializeField] private Sprite invisibilityImage;
-
-    protected override void ActivatePowerUp(PlayerMovement playerMovement)
+    public class Invisibility : PowerUpBase
     {
-        SetPlayerVisibility(playerMovement, false);
-        ActivateUIIndicator();
-    }
+        [SerializeField] private Sprite invisibilityImage;
 
-    protected override void DeactivatePowerUp(PlayerMovement playerMovement)
-    {
-        SetPlayerVisibility(playerMovement, true);
-    }
+        protected override void ActivatePowerUp(PlayerMovement playerMovement)
+        {
+            SetPlayerVisibility(playerMovement, false);
+            ActivateUIIndicator();
+        }
 
-    private void SetPlayerVisibility(PlayerMovement playerMovement, bool isVisible)
-    {
-        playerMovement.SetInvisibility(!isVisible);
-    }
+        protected override void DeactivatePowerUp(PlayerMovement playerMovement)
+        {
+            SetPlayerVisibility(playerMovement, true);
+        }
 
-    private void ActivateUIIndicator()
-    {
-        ActivateIndicator("Invisibility", invisibilityImage);
+        private void SetPlayerVisibility(PlayerMovement playerMovement, bool isVisible)
+        {
+            playerMovement.SetInvisibility(!isVisible);
+        }
+
+        private void ActivateUIIndicator()
+        {
+            ActivateIndicator("Invisibility", invisibilityImage);
+        }
     }
 }

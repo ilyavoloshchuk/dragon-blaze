@@ -1,116 +1,120 @@
-using Enemy;
 using Player;
 using Traps.Enemy;
 using UnityEngine;
 
-public class RangedEnemy : MonoBehaviour
+namespace Enemy
 {
-    [Header("Attack Parameters")]
-    [SerializeField] private float attackCooldown;
-    [SerializeField] private float range;
-    [SerializeField] private int damage;
-
-    [Header("Ranged Attack")]
-    [SerializeField] private Transform firepoint;
-    [SerializeField] private GameObject[] fireballs;
-
-    [Header("Collider Parameters")]
-    [SerializeField] private float colliderDistance;
-    [SerializeField] private BoxCollider2D boxCollider;
-
-    [Header("Player Layer")]
-    [SerializeField] private LayerMask playerLayer;
-
-    [Header("Audio")]
-    [SerializeField] private AudioClip fireballSound;
-    
-    private float cooldownTimer = Mathf.Infinity;
-    private Animator anim;
-    private EnemyPatrol enemyPatrol;
-    private PlayerMovement playerMovement;
-    
-    private void Awake()
+    public class RangedEnemy : MonoBehaviour
     {
-        InitializeComponents();
-    }
+        private static readonly int Attack = Animator.StringToHash("rangedAttack");
 
-    private void Update()
-    {
-        UpdateCooldownTimer();
-        HandleAttack();
-        UpdateEnemyPatrol();
-    }
+        [Header("Attack Parameters")]
+        [SerializeField] private float attackCooldown;
+        [SerializeField] private float range;
+        [SerializeField] private int damage;
+
+        [Header("Ranged Attack")]
+        [SerializeField] private Transform firepoint;
+        [SerializeField] private GameObject[] fireballs;
+
+        [Header("Collider Parameters")]
+        [SerializeField] private float colliderDistance;
+        [SerializeField] private BoxCollider2D boxCollider;
+
+        [Header("Player Layer")]
+        [SerializeField] private LayerMask playerLayer;
+
+        [Header("Audio")]
+        [SerializeField] private AudioClip fireballSound;
     
-    private void InitializeComponents()
-    {
-        anim = GetComponent<Animator>();
-        enemyPatrol = GetComponentInParent<EnemyPatrol>();
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
+        private float cooldownTimer = Mathf.Infinity;
+        private Animator anim;
+        private EnemyPatrol enemyPatrol;
+        private PlayerMovement playerMovement;
+    
+        private void Awake()
         {
-            playerMovement = player.GetComponent<PlayerMovement>();
+            InitializeComponents();
         }
-        else
-        {
-            Debug.LogError("Player object not found with tag 'Player'!");
-        }
-    }
-    
-    private void UpdateCooldownTimer()
-    {
-        cooldownTimer += Time.deltaTime;
-    }
 
-    private void HandleAttack()
-    {
-        if (PlayerInSight() && cooldownTimer >= attackCooldown)
+        private void Update()
         {
+            UpdateCooldownTimer();
+            HandleAttack();
+            UpdateEnemyPatrol();
+        }
+    
+        private void InitializeComponents()
+        {
+            anim = GetComponent<Animator>();
+            enemyPatrol = GetComponentInParent<EnemyPatrol>();
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                playerMovement = player.GetComponent<PlayerMovement>();
+            }
+            else
+            {
+                Debug.LogError("Player object not found with tag 'Player'!");
+            }
+        }
+    
+        private void UpdateCooldownTimer()
+        {
+            cooldownTimer += Time.deltaTime;
+        }
+
+        private void HandleAttack()
+        {
+            if (PlayerInSight() && cooldownTimer >= attackCooldown)
+            {
+                cooldownTimer = 0;
+                anim.SetTrigger(Attack);
+            }
+        }
+
+        private void UpdateEnemyPatrol()
+        {
+            if (enemyPatrol != null)
+                enemyPatrol.enabled = !PlayerInSight();
+        }
+    
+        private void RangedAttack()
+        {
+            SoundManager.instance.PlaySound(fireballSound);
             cooldownTimer = 0;
-            anim.SetTrigger("rangedAttack");
+            int fireballIndex = FindFireball();
+            fireballs[fireballIndex].transform.position = firepoint.position;
+            fireballs[fireballIndex].GetComponent<EnemyProjectile>().ActivateProjectile();
         }
-    }
 
-    private void UpdateEnemyPatrol()
-    {
-        if (enemyPatrol != null)
-            enemyPatrol.enabled = !PlayerInSight();
-    }
-    
-    private void RangedAttack()
-    {
-        SoundManager.instance.PlaySound(fireballSound);
-        cooldownTimer = 0;
-        int fireballIndex = FindFireball();
-        fireballs[fireballIndex].transform.position = firepoint.position;
-        fireballs[fireballIndex].GetComponent<EnemyProjectile>().ActivateProjectile();
-    }
-
-    private int FindFireball()
-    {
-        for (int i = 0; i < fireballs.Length; i++)
+        private int FindFireball()
         {
-            if (!fireballs[i].activeInHierarchy)
-                return i;
+            for (int i = 0; i < fireballs.Length; i++)
+            {
+                if (!fireballs[i].activeInHierarchy)
+                    return i;
+            }
+            return 0;
         }
-        return 0;
-    }
     
-    private bool PlayerInSight()
-    {
-        if (playerMovement.IsInvisible()) return false;
+        private bool PlayerInSight()
+        {
+            if (playerMovement.IsInvisible()) return false;
 
-        RaycastHit2D hit = Physics2D.BoxCast(
-            boxCollider.bounds.center + transform.right * range * transform.localScale.x * colliderDistance,
-            new Vector3(boxCollider.bounds.size.x * range, boxCollider.bounds.size.y, boxCollider.bounds.size.z),
-            0, Vector2.left, 0, playerLayer);
+            RaycastHit2D hit = Physics2D.BoxCast(
+                boxCollider.bounds.center + transform.right * (range * transform.localScale.x * colliderDistance),
+                new Vector3(boxCollider.bounds.size.x * range, boxCollider.bounds.size.y, boxCollider.bounds.size.z),
+                0, Vector2.left, 0, playerLayer);
 
-        return hit.collider != null;
-    }
+            return hit.collider != null;
+        }
     
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(boxCollider.bounds.center + transform.right * range * transform.localScale.x * colliderDistance,
-            new Vector3(boxCollider.bounds.size.x * range, boxCollider.bounds.size.y, boxCollider.bounds.size.z));
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(boxCollider.bounds.center + transform.right * range * transform.localScale.x * colliderDistance,
+                new Vector3(boxCollider.bounds.size.x * range, boxCollider.bounds.size.y, boxCollider.bounds.size.z));
+        }
     }
 }

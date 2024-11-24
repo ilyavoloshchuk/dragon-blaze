@@ -59,7 +59,7 @@ namespace Player
 
             if (collision.CompareTag("Enemy"))
             {
-                collision.GetComponent<Health>()?.TakeDamage(1);
+                collision.GetComponent<Health.Health>()?.TakeDamage(1);
             }
         }
 

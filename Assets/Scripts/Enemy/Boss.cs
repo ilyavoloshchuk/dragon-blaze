@@ -7,6 +7,8 @@ namespace Enemy
 {
     public class Boss : MonoBehaviour
     {
+        private static readonly int Attack = Animator.StringToHash("rangedAttack");
+
         [Header("Attack Parameters")]
         [SerializeField] private float attackCooldown;
         [SerializeField] private float range;
@@ -33,18 +35,6 @@ namespace Enemy
     
         private void Awake()
         {
-            InitializeComponents();
-        }
-
-        private void Update()
-        {
-            UpdateCooldownTimer();
-            HandleAttack();
-            UpdateEnemyPatrol();
-        }
-    
-        private void InitializeComponents()
-        {
             anim = GetComponent<Animator>();
             enemyPatrol = GetComponentInParent<EnemyPatrol>();
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -57,10 +47,13 @@ namespace Enemy
                 Debug.LogError("Player object not found with tag 'Player'!");
             }
         }
-    
-        private void UpdateCooldownTimer()
+
+        private void Update()
         {
             cooldownTimer += Time.deltaTime;
+            
+            HandleAttack();
+            UpdateEnemyPatrol();
         }
 
         private void HandleAttack()
@@ -68,7 +61,7 @@ namespace Enemy
             if (PlayerInSight() && cooldownTimer >= attackCooldown)
             {
                 cooldownTimer = 0;
-                anim.SetTrigger("rangedAttack");
+                anim.SetTrigger(Attack);
             }
         }
 
@@ -80,35 +73,24 @@ namespace Enemy
     
         private void RangedAttack()
         {
-            // Проигрываем звук атаки
             SoundManager.instance.PlaySound(fireballSound);
             cooldownTimer = 0;
-
-            // Рассчитываем направление к игроку
+            
             Vector3 directionToPlayer = playerMovement.transform.position - transform.position;
-
-            // Разворачиваем босса в сторону игрока
+            
             if (directionToPlayer.x < 0 && transform.localScale.x > 0 || directionToPlayer.x > 0 && transform.localScale.x < 0)
             {
                 transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
             }
-
-            // Запускаем корутину с задержкой перед выстрелом
+            
             StartCoroutine(DelayedFire());
         }
         
         private IEnumerator DelayedFire()
         {
-            // Ждём 0.5 секунды
             yield return new WaitForSeconds(0.1f);
-
-            // Находим доступный снаряд
             int fireballIndex = FindFireball();
-
-            // Устанавливаем снаряд в точку выстрела
             fireballs[fireballIndex].transform.position = firepoint.position;
-
-            // Активируем снаряд, передавая цель
             fireballs[fireballIndex].GetComponent<BossProjectile>().ActivateProjectile(playerMovement.transform.position);
         }
         
