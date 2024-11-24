@@ -1,411 +1,350 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using UI;
+using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+namespace Player
 {
-
-    #region Component References
-    private Rigidbody2D body;
-    private Animator anim;
-    private BoxCollider2D boxCollider;
-    private PlayerRespawn playerRespawn;
-    private UIManager uiManagerInstance;
-    #endregion
-
-    #region Movement
-    [Header("Movement Parameters")]
-    [SerializeField] public float jumpPower;
-    [SerializeField] public float speed;
-    private float horizontalInput;
-    #endregion
-
-    #region Coyote Time
-    [Header("Coyote Time")]
-    [SerializeField] private float coyoteTime;
-    private float coyoteCounter;
-    #endregion
-
-    #region Multiple Jumps
-    [Header("Multiple Jumps")]
-    [SerializeField] private int extraJumps = 2;
-    private int jumpCounter;
-    #endregion
-
-    #region Layers
-    [Header("Layers")]
-    [SerializeField] private LayerMask groundLayer;
-    #endregion
-
-    #region Sounds
-    [Header("Sounds")]
-    [SerializeField] private AudioClip jumpSound;
-    #endregion
-
-    #region Falling Parameters
-    [Header("Falling Parameters")]
-    [SerializeField] private float maxFallingTime = 2f;
-    private float fallingTimer = 0f;
-    private bool gameOverTriggered = false;
-    #endregion
-
-    #region Interactions
-    private bool isInteracting;
-    #endregion
-
-    #region Particle System
-    [SerializeField] private GameObject deathParticlesPrefab;
-    [SerializeField] private GameObject jumpParticlesPrefab;
-    [SerializeField] private GameObject wallSlideParticlesPrefab;
-    private ParticleSystem wallSlideParticles;
-    #endregion
-
-    #region Dash
-    [Header("Dash Effects")]
-    [SerializeField] private AudioClip dashSound;
-    [SerializeField] private GameObject dashParticlesPrefab;
-    [SerializeField] private float dashSpeed = 20f;
-    [SerializeField] private float dashDuration = 0.2f;
-    private bool isDashing;
-    private float dashTimer;
-    #endregion
-
-    #region Fall Death
-    [Header("Fall Death")]
-    [SerializeField] private float deathHeight = -10f;
-    private bool isDead = false;
-    #endregion
-    
-    [Header("Invisibility PowerUp")]
-    [SerializeField] public Color invisibleColor = new Color(1f, 1f, 1f, 0.5f);
-    [SerializeField] public SpriteRenderer playerSpriteRenderer;
-    private bool isInvisible = false;
-    
-    public bool OnLadder;
-    
-
-    private void Awake()
+    public class PlayerMovement : MonoBehaviour
     {
-        InitializeComponents();
-    }
+        private static readonly int Grounded = Animator.StringToHash("grounded");
+        private static readonly int Run = Animator.StringToHash("run");
+        private static readonly int Die1 = Animator.StringToHash("die");
+        private static readonly int Respawn = Animator.StringToHash("respawn");
+        private Rigidbody2D body;
+        private Animator anim;
+        private BoxCollider2D boxCollider;
+        private PlayerRespawn playerRespawn;
+        private UIManager uiManagerInstance;
+        
+        [Header("Movement Parameters")]
+        [SerializeField] public float jumpPower;
+        [SerializeField] public float speed;
+        private float horizontalInput;
+        
+        [Header("Coyote Time")]
+        [SerializeField] private float coyoteTime;
+        private float coyoteCounter;
+        
+        [Header("Multiple Jumps")]
+        [SerializeField] private int extraJumps = 2;
+        private int jumpCounter;
+        
+        [Header("Layers")]
+        [SerializeField] private LayerMask groundLayer;
+        
+        [Header("Sounds")]
+        [SerializeField] private AudioClip jumpSound;
+        
+        [Header("Falling Parameters")]
+        [SerializeField] private float maxFallingTime = 2f;
+        private float fallingTimer;
+        private bool gameOverTriggered;
+        
+        private bool isInteracting;
+        
+        [SerializeField] private GameObject deathParticlesPrefab;
+        [SerializeField] private GameObject jumpParticlesPrefab;
+        [SerializeField] private GameObject wallSlideParticlesPrefab;
+        
+        [Header("Dash Effects")]
+        [SerializeField] private AudioClip dashSound;
+        [SerializeField] private GameObject dashParticlesPrefab;
+        [SerializeField] private float dashSpeed = 20f;
+        [SerializeField] private float dashDuration = 0.2f;
+        private bool isDashing;
+        private float dashTimer;
+        
+        [Header("Fall Death")]
+        [SerializeField] private float deathHeight = -10f;
+        private bool isDead;
+    
+        [Header("Invisibility PowerUp")]
+        [SerializeField] public Color invisibleColor = new(1f, 1f, 1f, 0.5f);
+        [SerializeField] public SpriteRenderer playerSpriteRenderer;
+        private bool isInvisible;
 
-    private void Start()
-    {
-        wallSlideParticles = Instantiate(wallSlideParticlesPrefab, transform).GetComponent<ParticleSystem>();
-    }
 
-    private void Update()
-    {
-        if (!isDead)
+        private void Awake()
         {
-            HandlePlayerActions();
-            CheckFallDeath();
+            uiManagerInstance = FindObjectOfType<UIManager>();
+            body = GetComponent<Rigidbody2D>();
+            anim = GetComponent<Animator>();
+            boxCollider = GetComponent<BoxCollider2D>();
+            playerSpriteRenderer = GetComponent<SpriteRenderer>();
+            playerRespawn = GetComponent<PlayerRespawn>();
         }
-    }
 
-    private void InitializeComponents()
-    {
-        uiManagerInstance = FindObjectOfType<UIManager>();
-        body = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-        boxCollider = GetComponent<BoxCollider2D>();
-        playerSpriteRenderer = GetComponent<SpriteRenderer>();
-        playerRespawn = GetComponent<PlayerRespawn>();
-    }
-
-    private void HandlePlayerActions()
-    {
-        HandleFalling();
-        HandleMovement();
-        HandleJump();
-        HandleDash();
-    }
-
-    private void HandleFalling()
-    {
-        if (!IsGrounded())
+        private void Start()
         {
-            fallingTimer += Time.deltaTime;
+            Instantiate(wallSlideParticlesPrefab, transform).GetComponent<ParticleSystem>();
+        }
 
-            if (fallingTimer > maxFallingTime && !gameOverTriggered && !OnLadder)
+        private void Update()
+        {
+            if (!isDead)
             {
-                Die();
-                gameOverTriggered = true;
+                HandlePlayerActions();
+                CheckFallDeath();
             }
         }
-        else
-        {
-            fallingTimer = 0f;
-            gameOverTriggered = false;
-        }
-    }
 
-    private void HandleMovement()
-    {
-        horizontalInput = Input.GetAxis("Horizontal");
-
-        UpdatePlayerScale();
-        UpdateAnimationState();
-        ApplyMovement();
-    }
-
-    private void UpdatePlayerScale()
-    {
-        if (horizontalInput > 0.01f)
+        private void HandlePlayerActions()
         {
-            transform.localScale = Vector3.one;
-        }
-        else if (horizontalInput < -0.01f)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-    }
-
-    private void UpdateAnimationState()
-    {
-        if (isInteracting)
-        {
-            anim.SetBool("grounded", true);
-        }
-        else
-        {
-            anim.SetBool("run", Mathf.Abs(horizontalInput) > 0.01f);
+            HandleMovement();
+            HandleJump();
+            HandleDash();
         }
 
-        anim.SetBool("grounded", IsGrounded());
-    }
-
-    private void ApplyMovement()
-    {
-        body.gravityScale = 7;
-        body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
-    }
-
-    private void HandleJump()
-    {
-        if ((IsGrounded() || coyoteCounter > 0 || jumpCounter > 0) && Input.GetKeyDown(KeyCode.Space))
-            Jump();
-
-        if (Input.GetKeyUp(KeyCode.Space) && body.velocity.y > 0)
-            body.velocity = new Vector2(body.velocity.x, body.velocity.y / 2);
-
-        if (IsGrounded())
+        private void HandleMovement()
         {
-            ResetJumpState();
+            horizontalInput = Input.GetAxis("Horizontal");
+
+            UpdatePlayerScale();
+            UpdateAnimationState();
+            
+            body.gravityScale = 7;
+            body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
         }
-        else
-        {
-            coyoteCounter -= Time.deltaTime;
-        }
-    }
 
-    private void ResetJumpState()
-    {
-        if (IsGrounded())
+        private void UpdatePlayerScale()
         {
-            coyoteCounter = coyoteTime;
-            jumpCounter = extraJumps;
-            body.gravityScale = 1;
-        }
-    }
-
-    private void Jump()
-    {
-        if (IsGrounded() || coyoteCounter > 0)
-        {
-            PerformJump();
-            jumpCounter = extraJumps;
-        }
-        else if (jumpCounter > 0)
-        {
-            PerformJump();
-            jumpCounter--;
-        }
-    }
-
-    private void PerformJump()
-    {
-        body.velocity = new Vector2(body.velocity.x, jumpPower);
-        Instantiate(jumpParticlesPrefab, transform.position, Quaternion.identity);
-        AudioSource.PlayClipAtPoint(jumpSound, transform.position);
-    }
-
-    private bool IsGrounded()
-    {
-        float extraHeight = 0.1f;
-        int groundLayerMask = LayerMask.GetMask("Ground");
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, extraHeight, groundLayerMask);
-        return raycastHit.collider != null;
-    }
-
-    private void HandleDash()
-    {
-        if (Input.GetKeyDown(KeyCode.LeftShift) && Mathf.Abs(horizontalInput) > 0.01f)
-        {
-            PlayDashEffects();
-            if (!isDashing)
+            if (horizontalInput > 0.01f)
             {
-                StartCoroutine(Dash());
+                transform.localScale = Vector3.one;
+            }
+            else if (horizontalInput < -0.01f)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
             }
         }
-    }
 
-    private void PlayDashEffects()
-    {
-        if (dashSound != null)
+        private void UpdateAnimationState()
         {
-            AudioSource.PlayClipAtPoint(dashSound, transform.position);
-        }
-        else
-        {
-            Debug.LogWarning("Dash sound clip is not assigned.");
-        }
+            if (isInteracting)
+            {
+                anim.SetBool(Grounded, true);
+            }
+            else
+            {
+                anim.SetBool(Run, Mathf.Abs(horizontalInput) > 0.01f);
+            }
 
-        if (dashParticlesPrefab != null)
-        {
-            Instantiate(dashParticlesPrefab, transform.position, Quaternion.identity);
-        }
-        else
-        {
-            Debug.LogWarning("Dash Particle System Prefab is not assigned.");
-        }
-    }
-
-    private IEnumerator Dash()
-    {
-        isDashing = true;
-        float originalSpeed = speed;
-        speed = dashSpeed;
-
-        Color originalColor = playerSpriteRenderer.color;
-        playerSpriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0.5f);
-
-        yield return new WaitForSeconds(dashDuration);
-
-        playerSpriteRenderer.color = originalColor;
-        speed = originalSpeed;
-        isDashing = false;
-    }
-
-    private void CheckFallDeath()
-    {
-        if (transform.position.y < deathHeight)
-        {
-            Die();
-        }
-    }
-
-    public bool IsInvisible()
-    {
-        return isInvisible;
-    }
-
-    public bool IsVisible()
-    {
-        return !isInvisible;
-    }
-
-    public void SetInvisibility(bool visible)
-    {
-        isInvisible = !visible;
-        playerSpriteRenderer.color = visible ? Color.white : invisibleColor;
-    }
-
-    public void SetInteracting(bool interacting)
-    {
-        isInteracting = interacting;
-        anim.SetBool("grounded", isInteracting);
-        anim.SetBool("run", !interacting);
-
-        if (interacting)
-        {
-            body.velocity = Vector2.zero;
-        }
-    }
-
-    public void Die()
-    {
-        if (isDead) return;
-
-        isDead = true;
-
-        if (uiManagerInstance != null)
-        {
-            uiManagerInstance.GameOver();
-        }
-        else
-        {
-            Debug.LogWarning("UIManager instance is not found!");
-        }
-
-        if (deathParticlesPrefab != null)
-        {
-            Instantiate(deathParticlesPrefab, transform.position, Quaternion.identity);
-        }
-        else
-        {
-            Debug.LogWarning("Death Particle System Prefab is not assigned.");
+            anim.SetBool(Grounded, IsGrounded());
         }
         
-        foreach (Coin coin in FindObjectsOfType<Coin>())
+        private void HandleJump()
         {
-            coin.ResetValue();
+            if ((IsGrounded() || coyoteCounter > 0 || jumpCounter > 0) && Input.GetKeyDown(KeyCode.Space))
+                Jump();
+
+            if (Input.GetKeyUp(KeyCode.Space) && body.velocity.y > 0)
+                body.velocity = new Vector2(body.velocity.x, body.velocity.y / 2);
+
+            if (IsGrounded())
+            {
+                ResetJumpState();
+            }
+            else
+            {
+                coyoteCounter -= Time.deltaTime;
+            }
         }
 
-        this.enabled = false;
-
-        // Trigger death animation
-        if (anim != null)
+        private void ResetJumpState()
         {
-            anim.SetTrigger("die");
+            if (IsGrounded())
+            {
+                coyoteCounter = coyoteTime;
+                jumpCounter = extraJumps;
+                body.gravityScale = 1;
+            }
         }
 
-        // Disable player's collider
-        Collider2D playerCollider = GetComponent<Collider2D>();
-        if (playerCollider != null)
+        private void Jump()
         {
-            playerCollider.enabled = false;
+            if (IsGrounded() || coyoteCounter > 0)
+            {
+                PerformJump();
+                jumpCounter = extraJumps;
+            }
+            else if (jumpCounter > 0)
+            {
+                PerformJump();
+                jumpCounter--;
+            }
         }
 
-        // You might want to add a delay before resetting the player's position or reloading the level
-        StartCoroutine(ResetPlayerAfterDelay(2f));
-    }
-
-    private IEnumerator ResetPlayerAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        // Reset player position to the last checkpoint or starting position
-        if (playerRespawn != null && playerRespawn.GetCurrentCheckpoint() != null)
+        private void PerformJump()
         {
-            transform.position = playerRespawn.GetCurrentCheckpoint().position;
-        }
-        else
-        {
-            Debug.LogWarning("No checkpoint found. Resetting to default position.");
-            transform.position = Vector3.zero; // Or any other default position
+            body.velocity = new Vector2(body.velocity.x, jumpPower);
+            Instantiate(jumpParticlesPrefab, transform.position, Quaternion.identity);
+            AudioSource.PlayClipAtPoint(jumpSound, transform.position);
         }
 
-        // Re-enable player
-        isDead = false;
-        this.enabled = true;
-
-        // Re-enable player's collider
-        Collider2D playerCollider = GetComponent<Collider2D>();
-        if (playerCollider != null)
+        private bool IsGrounded()
         {
-            playerCollider.enabled = true;
+            float extraHeight = 0.1f;
+            int groundLayerMask = LayerMask.GetMask("Ground");
+            RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, extraHeight, groundLayerMask);
+            return raycastHit.collider != null;
         }
 
-        // Reset animation
-        if (anim != null)
+        private void HandleDash()
         {
-            anim.SetTrigger("respawn");
+            if (Input.GetKeyDown(KeyCode.LeftShift) && Mathf.Abs(horizontalInput) > 0.01f)
+            {
+                PlayDashEffects();
+                if (!isDashing)
+                {
+                    StartCoroutine(Dash());
+                }
+            }
         }
-    }
 
-    public bool CanAttack()
-    {
-        return Mathf.Approximately(horizontalInput, 0) && IsGrounded();
+        private void PlayDashEffects()
+        {
+            if (dashSound != null)
+            {
+                AudioSource.PlayClipAtPoint(dashSound, transform.position);
+            }
+            else
+            {
+                Debug.LogWarning("Dash sound clip is not assigned.");
+            }
+
+            if (dashParticlesPrefab != null)
+            {
+                Instantiate(dashParticlesPrefab, transform.position, Quaternion.identity);
+            }
+            else
+            {
+                Debug.LogWarning("Dash Particle System Prefab is not assigned.");
+            }
+        }
+
+        private IEnumerator Dash()
+        {
+            isDashing = true;
+            float originalSpeed = speed;
+            speed = dashSpeed;
+
+            Color originalColor = playerSpriteRenderer.color;
+            playerSpriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0.5f);
+
+            yield return new WaitForSeconds(dashDuration);
+
+            playerSpriteRenderer.color = originalColor;
+            speed = originalSpeed;
+            isDashing = false;
+        }
+
+        private void CheckFallDeath()
+        {
+            if (transform.position.y < deathHeight)
+            {
+                Die();
+            }
+        }
+
+        public bool IsInvisible() =>
+            isInvisible;
+
+        public bool IsVisible() =>
+            !isInvisible;
+
+        public void SetInvisibility(bool visible)
+        {
+            isInvisible = !visible;
+            playerSpriteRenderer.color = visible ? Color.white : invisibleColor;
+        }
+
+        public void SetInteracting(bool interacting)
+        {
+            isInteracting = interacting;
+            anim.SetBool(Grounded, isInteracting);
+            anim.SetBool(Run, !interacting);
+
+            if (interacting)
+            {
+                body.velocity = Vector2.zero;
+            }
+        }
+
+        private void Die()
+        {
+            if (isDead) return;
+
+            isDead = true;
+
+            if (uiManagerInstance != null)
+            {
+                uiManagerInstance.GameOver();
+            }
+            else
+            {
+                Debug.LogWarning("UIManager instance is not found!");
+            }
+
+            if (deathParticlesPrefab != null)
+            {
+                Instantiate(deathParticlesPrefab, transform.position, Quaternion.identity);
+            }
+            else
+            {
+                Debug.LogWarning("Death Particle System Prefab is not assigned.");
+            }
+        
+            foreach (Coin coin in FindObjectsOfType<Coin>())
+            {
+                coin.ResetValue();
+            }
+
+            enabled = false;
+            
+            if (anim != null)
+            {
+                anim.SetTrigger(Die1);
+            }
+            
+            Collider2D playerCollider = GetComponent<Collider2D>();
+            if (playerCollider != null)
+            {
+                playerCollider.enabled = false;
+            }
+            
+            StartCoroutine(ResetPlayerAfterDelay(2f));
+        }
+
+        private IEnumerator ResetPlayerAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            
+            if (playerRespawn != null && playerRespawn.GetCurrentCheckpoint() != null)
+            {
+                transform.position = playerRespawn.GetCurrentCheckpoint().position;
+            }
+            else
+            {
+                Debug.LogWarning("No checkpoint found. Resetting to default position.");
+                transform.position = Vector3.zero; 
+            }
+            
+            isDead = false;
+            enabled = true;
+            
+            Collider2D playerCollider = GetComponent<Collider2D>();
+            if (playerCollider != null)
+            {
+                playerCollider.enabled = true;
+            }
+            
+            if (anim != null)
+            {
+                anim.SetTrigger(Respawn);
+            }
+        }
+
+        public bool CanAttack() => 
+            Mathf.Approximately(horizontalInput, 0) && IsGrounded();
     }
 }

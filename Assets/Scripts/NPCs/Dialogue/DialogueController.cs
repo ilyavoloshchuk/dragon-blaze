@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Player;
 using TMPro;
 using UnityEngine;
 
@@ -68,7 +69,7 @@ namespace NPCs.Dialogue
             }
             Time.timeScale = 1f;
 
-            NPCNameText.text = dialogueText.speakerName;
+            NPCNameText.text = dialogueText.SpeakerName;
 
             foreach (string paragraph in dialogueText.paragraphs)
             {

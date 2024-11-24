@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Player;
 using Traps.FallingPlatform;
 using UnityEngine.Tilemaps;
 

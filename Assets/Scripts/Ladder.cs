@@ -1,4 +1,5 @@
 using System.Collections;
+using Player;
 using UnityEngine;
 
 public class Ladder : MonoBehaviour
@@ -14,10 +15,8 @@ public class Ladder : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     { 
-        if (!other.TryGetComponent(out PlayerMovement player)) return;
+        if (!other.TryGetComponent(out PlayerMovement _)) return;
 
-        player.OnLadder = true;
-        
         if (other.transform.position.y > _ladderCollider.bounds.max.y)
         {
             other.GetComponent<Rigidbody2D>().gravityScale = 3;
@@ -44,10 +43,8 @@ public class Ladder : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (!other.TryGetComponent(out PlayerMovement player)) return;
-        
-        player.OnLadder = true;
-        
+        if (!other.TryGetComponent(out PlayerMovement _)) return;
+
         var rbComponent = other.GetComponent<Rigidbody2D>();
         if (rbComponent != null)
             rbComponent.gravityScale = 7;

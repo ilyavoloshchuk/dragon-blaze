@@ -13,8 +13,8 @@ namespace Parallax
         private float textureUnitSizeX;
         private float textureUnitSizeY;
         private SpriteRenderer spriteRenderer;
-        
-        void Start()
+
+        private void Start()
         {
             InitializeComponents();
             SetupTextureSize();
