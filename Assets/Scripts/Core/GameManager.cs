@@ -48,7 +48,6 @@ namespace Core
         
         public static event Action<int> OnScoreChanged;
 
-        #region Coin Management
         public void AddCoins(int value)
         {
             totalCoins += value;
@@ -73,9 +72,7 @@ namespace Core
             else
                 Debug.LogError("UIManager not found.");
         }
-        #endregion
-
-        #region Save/Load System
+        
         public void SaveGame(bool isNewGame = false)
         {
             SaveData data = new SaveData
@@ -117,6 +114,5 @@ namespace Core
             }
             return null;
         }
-        #endregion
     }
 }
