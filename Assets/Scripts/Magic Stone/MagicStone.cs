@@ -50,8 +50,7 @@ namespace Magic_Stone
                     indicatorSprite.enabled = false;
             }
         }
-
-        #region Particle System
+        
         private void PlayInteractParticleSystem(Vector3 position)
         {
             if (interactParticleSystemPrefab != null)
@@ -69,7 +68,6 @@ namespace Magic_Stone
                 Debug.LogError("Interact Particle System Prefab is not assigned.");
             }
         }
-        #endregion
         
         private IEnumerator PlayParticlesThenLoadLevel(Vector3 position)
         {
@@ -88,13 +86,13 @@ namespace Magic_Stone
             }
         }
 
-        private IEnumerator LoadSceneAndWait(int sceneIndex)
+        private static IEnumerator LoadSceneAndWait(int sceneIndex)
         {
             SceneManager.LoadScene(sceneIndex);
             yield return new WaitForSeconds(10);
         }
         
-        private void SaveGame()
+        private static void SaveGame()
         {
             if (GameManager.instance != null)
             {

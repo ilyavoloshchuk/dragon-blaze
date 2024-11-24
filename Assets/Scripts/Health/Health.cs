@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Tilemaps;
 
 public class Health : MonoBehaviour
 {
-    #region Serialized Fields
     [Header("Health")]
     [SerializeField] private float startingHealth = 100f;
 
@@ -25,7 +25,8 @@ public class Health : MonoBehaviour
 
     [Header("Respawn")]
     [SerializeField] private List<FallingPlatform> fallingPlatforms;
-    #endregion
+    
+    [SerializeField] private Tilemap tilemap;
 
     #region Public Properties
     public float currentHealth { get; private set; }
@@ -148,6 +149,25 @@ public class Health : MonoBehaviour
         dead = true;
         PlaySound(deathSound);
         SpawnParticles(deathParticleSystemPrefab);
+
+        if (gameObject.transform.parent != null)
+        {
+            if (gameObject.transform.parent.CompareTag("Boss"))
+            {
+                RemoveTilesByPosition(19, 10, -6);
+            }   
+        }
+    }
+
+    private void RemoveTilesByPosition(int targetX, int startY, int endY)
+    {
+        for (var y = startY; y >= endY; y--) 
+        {
+            var position = new Vector3Int(targetX, y, 0); 
+            
+            if (tilemap.HasTile(position))
+                tilemap.SetTile(position, null); 
+        }
     }
 
     private void DisableComponents()

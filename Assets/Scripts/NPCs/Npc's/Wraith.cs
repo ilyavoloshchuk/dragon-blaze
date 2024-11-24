@@ -1,22 +1,17 @@
+using NPCs.Dialogue;
 using UnityEngine;
 
-public class Wraith : NPC, ITalkable
+namespace NPCs.Npc_s
 {
-    #region Serialized Fields
-    [SerializeField] private DialogueText dialogueText;
-    [SerializeField] private DialogueController dialogueController;
-    [SerializeField] private AudioClip dialogueSound;
-    #endregion
-
-    #region Public Methods
-    public override void Interact()
+    public class Wraith : Npc
     {
-        Talk(dialogueText);
-    }
+        [SerializeField] private DialogueText dialogueText;
+        [SerializeField] private DialogueController dialogueController;
+        [SerializeField] private AudioClip dialogueSound;
 
-    public void Talk(DialogueText dialogueText)
-    {
-        dialogueController.DisplayNextParagraph(dialogueText, dialogueSound);
+        protected override void Interact()
+        {
+            dialogueController.DisplayNextParagraph(dialogueText, dialogueSound);
+        }
     }
-    #endregion
 }

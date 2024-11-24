@@ -1,8 +1,9 @@
+using Enemy;
+using Traps.Enemy;
 using UnityEngine;
 
 public class RangedEnemy : MonoBehaviour
 {
-    #region Serialized Fields
     [Header("Attack Parameters")]
     [SerializeField] private float attackCooldown;
     [SerializeField] private float range;
@@ -21,16 +22,12 @@ public class RangedEnemy : MonoBehaviour
 
     [Header("Audio")]
     [SerializeField] private AudioClip fireballSound;
-    #endregion
-
-    #region Private Fields
+    
     private float cooldownTimer = Mathf.Infinity;
     private Animator anim;
     private EnemyPatrol enemyPatrol;
     private PlayerMovement playerMovement;
-    #endregion
-
-    #region Unity Lifecycle Methods
+    
     private void Awake()
     {
         InitializeComponents();
@@ -42,9 +39,7 @@ public class RangedEnemy : MonoBehaviour
         HandleAttack();
         UpdateEnemyPatrol();
     }
-    #endregion
-
-    #region Initialization
+    
     private void InitializeComponents()
     {
         anim = GetComponent<Animator>();
@@ -59,9 +54,7 @@ public class RangedEnemy : MonoBehaviour
             Debug.LogError("Player object not found with tag 'Player'!");
         }
     }
-    #endregion
-
-    #region Update Methods
+    
     private void UpdateCooldownTimer()
     {
         cooldownTimer += Time.deltaTime;
@@ -81,9 +74,7 @@ public class RangedEnemy : MonoBehaviour
         if (enemyPatrol != null)
             enemyPatrol.enabled = !PlayerInSight();
     }
-    #endregion
-
-    #region Attack Methods
+    
     private void RangedAttack()
     {
         SoundManager.instance.PlaySound(fireballSound);
@@ -102,9 +93,7 @@ public class RangedEnemy : MonoBehaviour
         }
         return 0;
     }
-    #endregion
-
-    #region Player Detection Methods
+    
     private bool PlayerInSight()
     {
         if (playerMovement.IsInvisible()) return false;
@@ -116,14 +105,11 @@ public class RangedEnemy : MonoBehaviour
 
         return hit.collider != null;
     }
-    #endregion
-
-    #region Gizmo Methods
+    
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(boxCollider.bounds.center + transform.right * range * transform.localScale.x * colliderDistance,
             new Vector3(boxCollider.bounds.size.x * range, boxCollider.bounds.size.y, boxCollider.bounds.size.z));
     }
-    #endregion
 }

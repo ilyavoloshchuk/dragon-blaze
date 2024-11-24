@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
 using UI;
 
 public class PlayerMovement : MonoBehaviour
@@ -43,12 +42,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private AudioClip jumpSound;
     #endregion
 
-    #region Score/Coins
-    [Header("Coins")]
-    private int score = 0;
-    public static event Action<int> OnScoreChanged;
-    #endregion
-
     #region Falling Parameters
     [Header("Falling Parameters")]
     [SerializeField] private float maxFallingTime = 2f;
@@ -82,21 +75,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float deathHeight = -10f;
     private bool isDead = false;
     #endregion
-
-    #region PowerUps
+    
     [Header("Invisibility PowerUp")]
-    [SerializeField] public float defaultInvisibilityDuration = 5f;
     [SerializeField] public Color invisibleColor = new Color(1f, 1f, 1f, 0.5f);
     [SerializeField] public SpriteRenderer playerSpriteRenderer;
     private bool isInvisible = false;
-
-    [Header("Higher Jump PowerUp")]
-    [SerializeField] private float defaultJumpMultiplier = 1.5f;
-
-    [Header("Speed Boost PowerUp")]
-    [SerializeField] private float defaultSpeedBoostMultiplier = 1.5f;
-    [SerializeField] private float defaultSpeedBoostDuration = 5f;
-    #endregion
     
     public bool OnLadder;
     
@@ -363,8 +346,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.LogWarning("Death Particle System Prefab is not assigned.");
         }
-
-        score = 0;
+        
         foreach (Coin coin in FindObjectsOfType<Coin>())
         {
             coin.ResetValue();

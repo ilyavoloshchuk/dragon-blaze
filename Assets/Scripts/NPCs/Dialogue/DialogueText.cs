@@ -1,15 +1,13 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Dialogue/New Dialogue Container")]
-public class DialogueText : ScriptableObject
+namespace NPCs.Dialogue
 {
-    #region Public Fields
-    public string speakerName;
-    public AudioClip dialogueSound;
-    #endregion
+    [CreateAssetMenu(menuName = "Dialogue/New Dialogue Container")]
+    public class DialogueText : ScriptableObject
+    {
+        public string speakerName;
 
-    #region Serialized Fields
-    [TextArea(5, 10)]
-    public string[] paragraphs;
-    #endregion
+        [TextArea(5, 10)]
+        public string[] paragraphs;
+    }
 }

@@ -1,3 +1,4 @@
+using Traps.Enemy;
 using UnityEngine;
 
 public class ArrowTrap : MonoBehaviour

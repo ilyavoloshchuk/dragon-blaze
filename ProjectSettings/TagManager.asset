@@ -13,6 +13,7 @@ TagManager:
   - NPC
   - FxTemporaire
   - MagicStone
+  - Boss
   layers:
   - Default
   - TransparentFX

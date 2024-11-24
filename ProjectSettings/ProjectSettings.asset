@@ -162,7 +162,9 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
+    Android: com.DefaultCompany.Episode9
     Standalone: com.DefaultCompany.Episode9
+    iPhone: com.DefaultCompany.Episode9
   buildNumber:
     Standalone: 0
     VisionOS: 0

@@ -5581,7 +5581,7 @@ GameObject:
   - component: {fileID: 1751048405}
   - component: {fileID: 1751048404}
   m_Layer: 0
-  m_Name: DELETEE
+  m_Name: Game Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18975,11 +18975,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8594955030401506640, guid: 83a0246fdfaa2820aa300557d2dccd18, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -65.1805
+      value: -62.201244
       objectReference: {fileID: 0}
     - target: {fileID: 8594955030401506640, guid: 83a0246fdfaa2820aa300557d2dccd18, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5758101
+      value: 0.54956996
       objectReference: {fileID: 0}
     - target: {fileID: 8594955030401506640, guid: 83a0246fdfaa2820aa300557d2dccd18, type: 3}
       propertyPath: m_LocalPosition.z
@@ -19034,6 +19034,8 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1081543615}
+  - {fileID: 1751048405}
   - {fileID: 1598891110}
   - {fileID: 8594955030702613968}
   - {fileID: 8542678696067161721}
@@ -19054,8 +19056,6 @@ SceneRoots:
   - {fileID: 1572312969}
   - {fileID: 7690568639952833525}
   - {fileID: 1717053721}
-  - {fileID: 1081543615}
+  - {fileID: 2109026583}
   - {fileID: 1676492606}
   - {fileID: 2027762415}
-  - {fileID: 2109026583}
-  - {fileID: 1751048405}

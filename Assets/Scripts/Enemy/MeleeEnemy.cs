@@ -1,3 +1,4 @@
+using Enemy;
 using UnityEngine;
 
 public class MeleeEnemy : MonoBehaviour
@@ -19,9 +20,6 @@ public class MeleeEnemy : MonoBehaviour
     [Header("Particle Systems")]
     [SerializeField] private GameObject hitParticleSystemPrefab;
     [SerializeField] private GameObject deathParticleSystemPrefab;
-
-    [Header("Health Parameters")]
-    [SerializeField] private float health = 100f;
 
     private float cooldownTimer = Mathf.Infinity;
     private Transform playerTransform;
@@ -186,21 +184,5 @@ public class MeleeEnemy : MonoBehaviour
             playerHealth.TakeDamage(damage);
             Instantiate(hitParticleSystemPrefab, playerTransform.position, Quaternion.identity);
         }
-    }
-
-    public void TakeDamage(float damage)
-    {
-        health -= damage;
-        if (health <= 0)
-        {
-            Die();
-        }
-    }
-
-    private void Die()
-    {
-        GetComponent<BoxCollider2D>().enabled = false;
-        Instantiate(deathParticleSystemPrefab, transform.position, Quaternion.identity);
-        Destroy(gameObject);
     }
 }
